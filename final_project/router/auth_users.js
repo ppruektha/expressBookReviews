@@ -67,24 +67,17 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
       const review = req.body.review;
       books[isbn]["reviews"][user] = review;
 
-      return res.status(403).json(books);
+      return res.status(403).json({ message: "A review has been ADDED/EDITTED to book with ISBN #"+isbn+" by USER: "+user});
 
 });
 
 
 regd_users.delete("/auth/delete/:isbn", (req, res) => {
-  if(req.session.authorization){
-      const user = req.session.authorization["username"]
-      const isbn = req.params.isbn;
-      if(Object.keys(books[isbn]["reviews"]).includes(user)){
-          delete books[isbn]["reviews"][user];
-          return res.status(200).json({ message: "Review deleted successfully" });
-      }else{
-          return res.status(200).json({ message: "User haven't posted any reviews yet" });
-      }  
-  }else{
-      return res.status(403).json({ message: "User not logged in" });
-  }
+    const user = req.session.authorization["username"]
+    const isbn = req.params.isbn;
+    delete books[isbn]["reviews"][user];
+
+    return res.status(403).json({ message: "A review has been DELETED for a book with ISBN #"+isbn+" by USER: "+user});
 
 });
 

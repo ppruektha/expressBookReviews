@@ -28,45 +28,95 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Get all book list
-  let booksList = books;
-  return res.status(300).json(booksList);
+    const booksCall = new Promise((resolve, reject)=>{
+        //try and catch statement
+        try{
+           let bookList = books;
+           resolve(bookList);
+        }catch(err)
+        {
+            reject(err);
+        }
+    });
+
+    booksCall.then(
+        (bookList) => res.status(300).json(bookList),
+        (err)=> res.status(500).json(err)
+    );
+  
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  const results = books[req.params.isbn];
-  return res.status(300).json(results);
+    const bookCall = new Promise((resolve, reject)=> {  
+        try{
+            let bookList = books[req.params.isbn];
+            resolve(bookList);
+        }catch(err){
+            reject (err);
+        }
+    });
+    
+    bookCall.then(
+        (bookList) => res.status(300).json(bookList),
+        (err) => res.status(500).json(err)
+    );
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   const author = req.params.author;
-  const booksArray = [];
+  
 
-  for(const key in books){
-    if(books.hasOwnProperty(key)){
-      const book = books[key];
-      booksArray.push(book);
-    }
-  }
+    const bookCall = new Promise((resolve, reject)=>{
+        try{
+            let booksArray = [];
+            for(const key in books){
+                if(books.hasOwnProperty(key)){
+                  const book = books[key];
+                  booksArray.push(book);
+                }
+              }
+            
+              let filtered_books = booksArray.filter((book) => book.author === author);
 
-  let filtered_books = booksArray.filter((book) => book.author === author);
-  return res.status(300).json(filtered_books);
+              resolve(filtered_books);
+        }catch(err)
+        {
+            reject(err);
+        }       
+    });
+    bookCall.then(
+        (filtered_books) => res.status(300).json(filtered_books),
+        (err) => res.status(500).json(err)
+    );
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   const title = req.params.title;
-  const booksArray = [];
+  const bookCall = new Promise((resolve, reject)=>{
+    try{
+            let booksArray = [];
+            for(const key in books){
+                if(books.hasOwnProperty(key)){
+                const book = books[key];
+                booksArray.push(book);
+                }
+            }
+            let filtered_books = booksArray.filter((book) => book.title === title);
+            resolve(filtered_books);
+        }catch(err){
+            reject(err);
+        }
+    });
 
-  for(const key in books){
-    if(books.hasOwnProperty(key)){
-      const book = books[key];
-      booksArray.push(book);
-    }
-  }
-  let filtered_books = booksArray.filter((book) => book.title === title);
-  return res.status(300).json(filtered_books);
+ 
+    bookCall.then(
+        (filtered_books) => res.status(300).json(filtered_books),
+        (err) => res.status(500).json(err)
+    );
+
 });
 
 //  Get book review
